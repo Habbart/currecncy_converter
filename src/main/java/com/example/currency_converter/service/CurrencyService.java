@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
@@ -26,9 +28,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
+@EnableScheduling
 public class CurrencyService {
 
     @Autowired
@@ -46,7 +50,8 @@ public class CurrencyService {
         this.currencyDAO = currencyDAO;
     }
 
-    public void getForCurrencyListFromBankAndSave() {
+    @Scheduled(timeUnit = TimeUnit.MINUTES ,fixedRate = 30)
+    public void getForCurrecyListFromBankAndSave() {
         //take currency from URL
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
@@ -64,7 +69,10 @@ public class CurrencyService {
         List<Currency> currencyList = parseXMLToCurrency(doc);
         addCurrency(currencyList);
 
+    }
 
+    public void getListOfCurrency(){
+        getForCurrecyListFromBankAndSave();
     }
 
 

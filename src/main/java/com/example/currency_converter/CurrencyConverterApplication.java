@@ -18,7 +18,7 @@ public class CurrencyConverterApplication {
     @Bean
     CommandLineRunner commandLineRunner(CurrencyService currencyService){
         return args -> {
-            currencyService.getForCurrencyListFromBankAndSave();
+            currencyService.getListOfCurrency();
         };
     }
 
