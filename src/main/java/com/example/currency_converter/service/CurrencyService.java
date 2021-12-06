@@ -75,7 +75,9 @@ public class CurrencyService {
             return currencyDAO.findAllByDate(localDate);
         }
         if(date == null && currency != null) return currencyDAO.findAllByName(currency);
-        return currencyDAO.findAlLOrderBy().subList(0, 3);
+        if(date == null && currency == null) return currencyDAO.findAlLOrderBy().subList(0, 3);
+        LocalDate localDate = LocalDate.parse(date);
+        return currencyDAO.findDistinctByDateAndName(localDate, currency);
 
     }
 

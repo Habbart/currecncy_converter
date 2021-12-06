@@ -7,11 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 @Repository
-public interface CurrencyDAO extends JpaRepository<Currency, Date> {
+public interface CurrencyDAO extends JpaRepository<Currency, Long> {
 
 
     List<Currency> findAllByDate(LocalDate localDate);
@@ -19,4 +18,6 @@ public interface CurrencyDAO extends JpaRepository<Currency, Date> {
     List<Currency> findAllByName(String name);
     @Query("select c from Currency c order by current_date asc")
     List<Currency> findAlLOrderBy();
+    @Query("select distinct c from Currency c where c.date = ?1 and c.name = ?2 group by current_date ")
+    List<Currency> findDistinctByDateAndName(LocalDate date, String name);
 }
