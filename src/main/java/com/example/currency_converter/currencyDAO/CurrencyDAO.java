@@ -7,13 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface CurrencyDAO extends JpaRepository<Currency, Long> {
 
+    //todo приложение падает с ошибкой currency=rub
 
-    List<Currency> findAllByDate(LocalDate localDate);
+    List<Currency> findAllByDate(LocalDate date);
+
     @Query("select c from Currency c where c.name = ?1 group by current_date")
     List<Currency> findAllByName(String name);
     @Query("select c from Currency c order by current_date asc")
