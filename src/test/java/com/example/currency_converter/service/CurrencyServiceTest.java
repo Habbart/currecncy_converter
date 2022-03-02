@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-//todo дописать тесты
+//todo 2дописать тесты
 class CurrencyServiceTest {
 
     @Test

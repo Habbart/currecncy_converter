@@ -1,6 +1,7 @@
 package com.example.currency_converter.controller;
 
 
+import com.example.currency_converter.dto.CurrencyDto;
 import com.example.currency_converter.entity.Currency;
 import com.example.currency_converter.service.CurrencyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +24,21 @@ public class CurrencyController {
     /**
      * Method return list of currency with required parameters.
      *
-     * @param date - trying to find currency on this date. If null - return currency for last month
-     * @param currency - trying to return exact currency from ENUM Allowed currency. If null - return all currency which available.
-     * @return list of currency for exact date or exact currency
+     * @param startDate trying to find currency from this date. If null - find all currencies from this date till current date.
+     * @param endDate trying to find currency until this date. If date is null - find all currencies till current date from start date.
+     *                If both start and end dates are null - return currency for current date.
+     * @param currency - trying to return exact currency. If null - return all currency which available.
+     * @return list of currency for range of dates or exact currency
      */
+
         @GetMapping("")
-        public List<Currency> getCurrency (@RequestParam (value = "date", required = false) String date,
+        public List<CurrencyDto> getCurrency (@RequestParam (value = "start_date", required = false) String startDate,
+                                           @RequestParam (value = "end_date", required = false) String endDate,
                                            @RequestParam (value = "currency", required = false) String currency){
 
-            return currencyService.getCurrency(date, currency);
+            CurrencyDto currencyDto = new CurrencyDto(startDate, endDate, currency);
+
+            return currencyService.getCurrency(currencyDto);
         }
 
 }

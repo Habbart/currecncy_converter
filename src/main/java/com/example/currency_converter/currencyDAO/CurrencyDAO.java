@@ -13,9 +13,8 @@ import java.util.List;
 @Repository
 public interface CurrencyDAO extends JpaRepository<Currency, Long> {
 
-    //todo приложение падает с ошибкой currency=rub
-
-    List<Currency> findAllByDate(LocalDate date);
+    @Query("select c from Currency c where c.date >= ?1 and c.date <= ?2")
+    List<Currency> getAllByDateAfterAndDateBefore(LocalDate startDate, LocalDate beforeDate);
 
     @Query("select c from Currency c where c.name = ?1 group by current_date")
     List<Currency> findAllByName(String name);
@@ -23,4 +22,10 @@ public interface CurrencyDAO extends JpaRepository<Currency, Long> {
     List<Currency> findAlLOrderBy();
     @Query("select distinct c from Currency c where c.date = ?1 and c.name = ?2 group by current_date ")
     List<Currency> findDistinctByDateAndName(LocalDate date, String name);
+
+    @Query("select (count(c) > 0) from Currency c where c.name = ?1")
+    boolean existsCurrencyByName(String name);
+
+    Currency findDistinctFirstByIdNotNull();
+
 }

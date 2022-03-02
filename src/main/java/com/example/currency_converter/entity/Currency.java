@@ -1,11 +1,16 @@
 package com.example.currency_converter.entity;
 
 
+import lombok.*;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "currencies")
+@Setter
+@Getter
+@ToString
 public class Currency {
 
     @Id
@@ -31,46 +36,4 @@ public class Currency {
         this.ratio = ratio;
     }
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Double getRatio() {
-        return ratio;
-    }
-
-    public void setRatio(Double ratio) {
-        this.ratio = ratio;
-    }
-
-    @Override
-    public String toString() {
-        return "Currency{" +
-                "id=" + id +
-                ", date=" + date +
-                ", name='" + name + '\'' +
-                ", ratio=" + ratio +
-                '}';
-    }
 }
