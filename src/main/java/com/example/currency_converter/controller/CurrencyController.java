@@ -2,8 +2,8 @@ package com.example.currency_converter.controller;
 
 
 import com.example.currency_converter.dto.CurrencyDto;
-import com.example.currency_converter.entity.Currency;
 import com.example.currency_converter.service.CurrencyService;
+import com.example.currency_converter.util.CurrencyMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +21,9 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
+    @Autowired
+    private CurrencyMapper currencyMapper;
+
     /**
      * Method return list of currency with required parameters.
      *
@@ -36,7 +39,7 @@ public class CurrencyController {
                                            @RequestParam (value = "end_date", required = false) String endDate,
                                            @RequestParam (value = "currency", required = false) String currency){
 
-            CurrencyDto currencyDto = new CurrencyDto(startDate, endDate, currency);
+            CurrencyDto currencyDto = currencyMapper.getCurrencyDtoInstance(startDate, endDate, currency);
 
             return currencyService.getCurrency(currencyDto);
         }

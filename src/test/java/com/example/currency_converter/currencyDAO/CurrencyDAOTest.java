@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//todo допилить тесты
+
+
 class CurrencyDAOTest {
 
     @Test

@@ -8,7 +8,7 @@ import com.example.currency_converter.exception_handler.IllegalCurrency;
 import com.example.currency_converter.exception_handler.IncorrectDate;
 import com.example.currency_converter.util.CurrencyMapper;
 import com.example.currency_converter.util.TextFileDownloader;
-import com.example.currency_converter.util.ValidatorHelper;
+import com.example.currency_converter.util.DtoParamsHelper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -32,7 +34,7 @@ public class CurrencyService {
     private final CurrencyDAO currencyDAO;
     private final CurrencyMapper currencyMapper;
 
-    private List<Currency> currencyCacheList = new ArrayList<>();
+    private HashSet<String> currencyCashSet; //для проверки наличия валюты без дубликатов
 
 
     //todo 3.дописать спецификацию
@@ -52,7 +54,11 @@ public class CurrencyService {
 
         File file = textFileDownloader.getFile();
 
-        return currencyMapper.getListOfCurrencyFromFile(file);
+        List<Currency> listOfCurrencyFromFile = currencyMapper.getListOfCurrencyFromFile(file);
+
+        updateCashOfCurrenciesNames(listOfCurrencyFromFile);
+
+        return listOfCurrencyFromFile;
 
     }
 
@@ -65,37 +71,45 @@ public class CurrencyService {
      * @return list of currency if present
      */
     public List<CurrencyDto> getCurrency(CurrencyDto currencyDto) {
-        //проверяем параметры DTO на валидность
+
         log.debug("проверяем параметры DTO на валидность");
-        ValidatorHelper.checkDateFormat(currencyDto.getStartDate(), currencyDto.getEndDate());
-        Currency currency = checkCurrencyAvailability(currencyDto.getCurrency(), currencyCacheList);
+        DtoParamsHelper.checkDateFormat(currencyDto.getStartDate(), currencyDto.getEndDate());
+        LocalDate[] dates = DtoParamsHelper.getStartAndEndDatesFromDto(currencyDto);
+        String currencyName = checkCurrencyAvailability(currencyDto.getCurrency(), currencyCashSet);
 
         //вытаскиываем переменные для удобства
-        LocalDate startDate = getDateFromString(currencyDto.getStartDate());
-        LocalDate endDate = getDateFromString(currencyDto.getEndDate());
+        LocalDate startDate = dates[0];
+        LocalDate endDate = dates[1];
 
         log.debug(String.format("start date: %s, end date: %s", startDate, endDate));
         log.debug("берём лист всех валют за выбранные даты");
+
         //берём лист всех валют за выбранные даты, если даты = null, то возвращает лист за текущую дату
         List<Currency> listOfAllCurrencies = currencyDAO.getAllByDateAfterAndDateBefore(startDate, endDate);
 
-        //если валюта не выбрана, то возвращаем лист всех валют за сегодня, иначе ищет валюту и возвращает лист из одной позиции
-        if(currency == null) {
+        //если за выбранные даты не найдено ни одной валюты, то кидаем исключение с ближайшей доступной датой для потворного запроса
+        if(listOfAllCurrencies.isEmpty()){
+            LocalDate availableDate = currencyDAO.findDistinctFirstByDateBefore(endDate).getDate();
+            throw new IncorrectDate(String.format("Currency %S for this date unavailable. Last date of available currency: %s", currencyDto.getCurrency(), availableDate));
+        }
+
+        //если валюта не выбрана, то возвращаем лист всех валют за выбранные даты, иначе ищет валюту и возвращает лист из одной позиции
+        if(currencyName.isEmpty()) {
             log.debug("валюта не выбрана");
-            if(listOfAllCurrencies.isEmpty()){
-                LocalDate availableDate = currencyDAO.findDistinctFirstByIdNotNull().getDate();
-                throw new IncorrectDate(String.format("Currency for this date unavailable. Last date of available currency: %s", availableDate));
-            }
             return currencyMapper.getListOfCurrencyDto(listOfAllCurrencies);
         } else {
             log.debug("выбрана");
-            return List.of(currencyMapper.getCurrencyDto(currency));
+            log.debug(currencyName);
+            //фильтруем лист, где совпадает валюта с переданной и возвращаем
+            List<Currency> collect = listOfAllCurrencies.stream().filter(c -> c.getName().equals(currencyName)).collect(Collectors.toList());
+            return currencyMapper.getListOfCurrencyDto(collect);
         }
 
     }
 
 
     public void saveListOfCurrencies(List<Currency> currencyList){
+        updateCashOfCurrenciesNames(currencyList);
         currencyDAO.saveAll(currencyList);
     }
 
@@ -104,27 +118,25 @@ public class CurrencyService {
      * Check if list contain exact currency name.
      * If yes - return this currency from list.
      * @param currency name of currency which you want to find in the list
-     * @param list where you want to find this currency
+     * @param currencies where you want to find this currency
      * @return currency if present else - throw exception
      */
-    private Currency checkCurrencyAvailability(String currency, List<Currency> list){
-        if(currency == null) return null;
-        for (Currency c:
-                list) {
+    private String checkCurrencyAvailability(String currency, Collection<String> currencies){
+        if(currency == null) return "";
+        for (String s:
+                currencies) {
             currency = currency.toLowerCase().trim();
-            String check = c.getName().toLowerCase().trim();
+            String check = s.toLowerCase().trim();
             if(currency.equals(check)) {
-                return c;
+                return s;
             }
 
         }
         throw new IllegalCurrency(String.format("Illegal name of currency: %s", currency));
     }
 
-    //парсим дату из строки, если строка пустая - возвращаем сегодня
-    private LocalDate getDateFromString(String dateString){
-        if(dateString == null) return LocalDate.now();
-        return LocalDate.parse(dateString);
+    private void updateCashOfCurrenciesNames(List<Currency> list){
+        list.forEach(c -> currencyCashSet.add(c.getName()));
     }
 
 

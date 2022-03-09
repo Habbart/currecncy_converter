@@ -41,9 +41,12 @@ public class CurrencyMapper {
         //парсим XML файл в CurrencyXML объект
         CurrencyFromXML сurrencyFromXML = null;
         try (FileReader fileReader = new FileReader(file)){
-                XStream xstream = new XStream(); //создаем XStream
-                xstream.addPermission(AnyTypePermission.ANY); // разрешаем всем классам из CurrencyXML читать XStream
-                xstream.processAnnotations(CurrencyFromXML.class); // передаем главный класс
+            //создаем XStream
+                XStream xstream = new XStream();
+            // разрешаем всем классам из CurrencyXML читать XStream
+                xstream.addPermission(AnyTypePermission.ANY);
+            // передаем главный класс
+                xstream.processAnnotations(CurrencyFromXML.class);
                 сurrencyFromXML = (CurrencyFromXML) xstream.fromXML(fileReader);
 
             if(сurrencyFromXML == null) throw new FileNotFoundException("No XML file, please check URL");
@@ -65,9 +68,11 @@ public class CurrencyMapper {
     private List<Currency> getListOfCurrencyFromCurrencyObject(@NonNull CurrencyFromXML currencyFromXML){
         //получаем список валюты из объекта, в который мы парсили XML
         List<Currency> resultList = new ArrayList<>();
+        //возвращаем Мапу состояющую из имени валюты и ставки
         Map<String, String> currencyAndRate = currencyFromXML.getMapOfCurrencies();
+        //парсим дату из объекта, она одна на весь объект
         LocalDate localDate = LocalDate.parse(currencyFromXML.getDate());
-
+        //создаем лист из мапы
         currencyAndRate.forEach((k, v) -> resultList.add(new Currency(localDate, k, Double.parseDouble(v))));
 
         return resultList;
@@ -79,16 +84,22 @@ public class CurrencyMapper {
      * @return list of DTOs
      */
     public List<CurrencyDto> getListOfCurrencyDto(List<Currency> currencies){
-        return currencies.stream().map(this::getCurrencyDto).distinct().collect(Collectors.toList());
+        return currencies.stream().map(this::getCurrencyDtoInstance).distinct().collect(Collectors.toList());
 
     }
 
-    public CurrencyDto getCurrencyDto(Currency currency){
+    public CurrencyDto getCurrencyDtoInstance(Currency currency){
+        //юзаем stringbuilder для производительности
         StringBuilder sb = new StringBuilder();
         sb.append(currency.getName());
         sb.append(": ");
         sb.append(currency.getRatio());
         return new CurrencyDto(currency.getDate().toString(), currency.getDate().toString(), sb.toString());
+
+    }
+
+    public CurrencyDto getCurrencyDtoInstance(String startDate, String endDate, String currencyName){
+        return new CurrencyDto(startDate, endDate, currencyName);
 
     }
 }

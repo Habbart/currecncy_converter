@@ -26,6 +26,6 @@ public interface CurrencyDAO extends JpaRepository<Currency, Long> {
     @Query("select (count(c) > 0) from Currency c where c.name = ?1")
     boolean existsCurrencyByName(String name);
 
-    Currency findDistinctFirstByIdNotNull();
 
+    Currency findDistinctFirstByDateBefore(LocalDate localDate);
 }
