@@ -26,12 +26,18 @@ import java.util.stream.Collectors;
 public class CurrencyMapper {
 
 
+    /**
+     * Method push file to exact implementation of parser
+     * @param file which you want to parse
+     * @return List of currencies
+     */
     public List<Currency> getListOfCurrencyFromFile(@NonNull File file){
         CurrencyFromXML currencyFromXML = parseFileToCurrencyXMLObject(file);
         return getListOfCurrencyFromCurrencyObject(currencyFromXML);
     }
 
     /**
+     * Exact implementation of parsing XML to list of currencies
      * Get XML file and parse it according to CurrencyXML through XStream API.
      * Need to make correct object to parse
      * @param file which we want to parse
@@ -39,7 +45,7 @@ public class CurrencyMapper {
      */
     private CurrencyFromXML parseFileToCurrencyXMLObject(@NonNull File file){
         //парсим XML файл в CurrencyXML объект
-        CurrencyFromXML сurrencyFromXML = null;
+        CurrencyFromXML currencyFromXml = null;
         try (FileReader fileReader = new FileReader(file)){
             //создаем XStream
                 XStream xstream = new XStream();
@@ -47,9 +53,9 @@ public class CurrencyMapper {
                 xstream.addPermission(AnyTypePermission.ANY);
             // передаем главный класс
                 xstream.processAnnotations(CurrencyFromXML.class);
-                сurrencyFromXML = (CurrencyFromXML) xstream.fromXML(fileReader);
+                currencyFromXml = (CurrencyFromXML) xstream.fromXML(fileReader);
 
-            if(сurrencyFromXML == null) throw new FileNotFoundException("No XML file, please check URL");
+            if(currencyFromXml == null) throw new FileNotFoundException("No XML file, please check URL");
         } catch (FileNotFoundException e) {
             log.warn("need to check XML URL or XML schema");
             e.printStackTrace();
@@ -57,7 +63,7 @@ public class CurrencyMapper {
             log.warn("filereader didn't closed");
             e.printStackTrace();
         }
-        return сurrencyFromXML;
+        return currencyFromXml;
     }
 
     /**
@@ -88,6 +94,12 @@ public class CurrencyMapper {
 
     }
 
+    /**
+     * Method to map currency -> CurrencyDto
+     * @param currency to map
+     * @return Currency DTO result
+     */
+
     public CurrencyDto getCurrencyDtoInstance(Currency currency){
         //юзаем stringbuilder для производительности
         StringBuilder sb = new StringBuilder();
@@ -98,6 +110,13 @@ public class CurrencyMapper {
 
     }
 
+    /**
+     * Method to map incoming request to Currency DTO
+     * @param startDate from request
+     * @param endDate from request
+     * @param currencyName from request
+     * @return DTO to further transfer
+     */
     public CurrencyDto getCurrencyDtoInstance(String startDate, String endDate, String currencyName){
         return new CurrencyDto(startDate, endDate, currencyName);
 

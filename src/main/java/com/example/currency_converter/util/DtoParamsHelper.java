@@ -16,8 +16,8 @@ public class DtoParamsHelper {
 
     /**
      * Check if String has correct date format to be parse in the future.
-     * May return null if it present, so require null check.
-     * @param args Dates in String fromat to check
+     * May return null if it presents, so require null check.
+     * @param args Dates in String format to check
      */
     public static void checkDateFormat(String ... args) {
         if(args == null) return;

@@ -5,12 +5,13 @@ import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
+/**
+ * Class only to perform data transfer from exactly XML format to Currency for further transfer
+ */
 @XStreamAlias("gesmes:Envelope")
 public class CurrencyFromXML {
 
@@ -24,17 +25,17 @@ public class CurrencyFromXML {
     @XStreamAlias("Cube")
     Cube cube;
 
-    public String getDate(){
+    public String getDate() {
         return cube.cubeRate.date;
     }
 
-    public Map<String, String> getMapOfCurrencies(){
+    public Map<String, String> getMapOfCurrencies() {
         return cube.cubeRate.getMapOfCurrency();
     }
 
 
     @XStreamAlias("gesmes:Sender")
-    private class Sender{
+    private class Sender {
 
         @XStreamAlias("gesmes:name")
         String nameOfSender;
@@ -46,11 +47,12 @@ public class CurrencyFromXML {
                     '}';
         }
     }
+
     @XStreamAlias("Cube")
-    private class Cube{
+    private class Cube {
 
         @XStreamAlias("Cube")
-         CubeRate cubeRate;
+        CubeRate cubeRate;
 
         @Override
         public String toString() {
@@ -62,7 +64,7 @@ public class CurrencyFromXML {
 
 
     @XStreamAlias("Cube")
-    private class CubeRate{
+    private class CubeRate {
 
         @XStreamAlias("time")
         @XStreamAsAttribute
@@ -72,7 +74,7 @@ public class CurrencyFromXML {
         List<CubeCurrencyAndRate> listOfCurrency = new ArrayList<>();
 
 
-        private Map<String, String> getMapOfCurrency(){
+        private Map<String, String> getMapOfCurrency() {
             return listOfCurrency.stream().collect(Collectors.toMap(CubeCurrencyAndRate::getCurrency, CubeCurrencyAndRate::getRate));
         }
 
@@ -84,6 +86,7 @@ public class CurrencyFromXML {
                     '}';
         }
     }
+
     @XStreamAlias("Cube")
     private class CubeCurrencyAndRate {
 

@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 public class ExceptionHandler {
 
     @org.springframework.web.bind.annotation.ExceptionHandler
-    public ResponseEntity<String> incorrectDate(IncorrectDate exception){
+    public ResponseEntity<String> incorrectDate(IncorrectDate exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @org.springframework.web.bind.annotation.ExceptionHandler
-    public ResponseEntity<String> incorrectCurrency(IllegalCurrency exception){
+    public ResponseEntity<String> incorrectCurrency(IllegalCurrency exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

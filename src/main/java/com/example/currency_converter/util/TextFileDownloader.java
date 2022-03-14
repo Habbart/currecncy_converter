@@ -1,7 +1,5 @@
 package com.example.currency_converter.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +18,15 @@ public class TextFileDownloader {
     @Value("${url}")
     private String url;
 
-    public File getFile(){
-        File file = new File(String.format("DownloadedFile_%s.txt", 1 ));
+
+    /**
+     * Download file from URL in param to TXT file - DownloadedFile_1.txt.
+     * If txt file not exist - create such file.
+     *
+     * @return
+     */
+    public File getFile() {
+        File file = new File("DownloadedFile_1.txt");
         try {
             URL website = new URL(this.url);
             try (ReadableByteChannel rbc = Channels.newChannel(website.openStream());

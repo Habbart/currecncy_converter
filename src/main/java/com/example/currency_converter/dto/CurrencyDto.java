@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 
-
+/**
+ * To this class mapped incoming requests
+ */
 @AllArgsConstructor
 @Data
 public class CurrencyDto {
