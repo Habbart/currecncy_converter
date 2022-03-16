@@ -18,7 +18,7 @@ public class Currency {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Column(name = "DATE")
     private LocalDate date;
@@ -33,6 +33,13 @@ public class Currency {
     }
 
     public Currency(LocalDate date, String name, Double ratio) {
+        this.date = date;
+        this.name = name;
+        this.ratio = ratio;
+    }
+
+    public Currency(long id, LocalDate date, String name, Double ratio) {
+        this.id = id;
         this.date = date;
         this.name = name;
         this.ratio = ratio;

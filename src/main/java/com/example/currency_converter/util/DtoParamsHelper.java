@@ -17,21 +17,22 @@ public class DtoParamsHelper {
     /**
      * Check if String has correct date format to be parse in the future.
      * May return null if it presents, so require null check.
+     *
      * @param args Dates in String format to check
      */
-    public static void checkDateFormat(String ... args) {
-        if(args == null) return;
+    public static void checkDateFormat(String... args) {
+        if (args == null) return;
         try {
-             for (String s: args)   {
-                 if(s == null) {
-                     continue;
-                 }
-                    LocalDate.parse(s);
+            for (String s : args) {
+                if (s == null) {
+                    continue;
                 }
-            } catch (Exception e) {
-            throw new IncorrectDate("Incorrect date format, date should be in format: yyyy-mm-dd");
+                LocalDate.parse(s);
             }
+        } catch (Exception e) {
+            throw new IncorrectDate("Incorrect date format, date should be in format: yyyy-mm-dd");
         }
+    }
 
 
     /**
@@ -40,27 +41,28 @@ public class DtoParamsHelper {
      * Opposite, if end date is null, start date is not null => end date = start date.
      * If both dates are null = return today for both dates
      * If start date is after end date - swap dates.
+     *
      * @param currencyDto Dto which you receive from Controller
      * @return arrays from two dates - start date and end date
      */
-    public static LocalDate[] getStartAndEndDatesFromDto(CurrencyDto currencyDto){
+    public static LocalDate[] getStartAndEndDatesFromDto(CurrencyDto currencyDto) {
         String startDate = currencyDto.getStartDate();
         String endDate = currencyDto.getEndDate();
 
         LocalDate[] dates = new LocalDate[2];
 
-        if(startDate == null && endDate == null){
-             dates[0] = dates[1] = LocalDate.now();
-        } else if(startDate != null && endDate == null){
+        if (startDate == null && endDate == null) {
+            dates[0] = dates[1] = LocalDate.now();
+        } else if (startDate != null && endDate == null) {
             dates[0] = dates[1] = LocalDate.parse(startDate);
-        } else if(startDate == null){
+        } else if (startDate == null) {
             dates[0] = dates[1] = LocalDate.parse(endDate);
-        } else{
+        } else {
             dates[0] = LocalDate.parse(startDate);
             dates[1] = LocalDate.parse(endDate);
         }
         //если конечная дата раньше чем начальная - то меняем их местами
-        if(dates[0].isAfter(dates[1])){
+        if (dates[0].isAfter(dates[1])) {
             LocalDate temp = dates[0];
             dates[0] = dates[1];
             dates[1] = temp;

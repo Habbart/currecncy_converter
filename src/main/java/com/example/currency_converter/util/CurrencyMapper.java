@@ -14,7 +14,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
@@ -28,10 +31,11 @@ public class CurrencyMapper {
 
     /**
      * Method push file to exact implementation of parser
+     *
      * @param file which you want to parse
      * @return List of currencies
      */
-    public List<Currency> getListOfCurrencyFromFile(@NonNull File file){
+    public List<Currency> getListOfCurrencyFromFile(@NonNull File file) {
         CurrencyFromXML currencyFromXML = parseFileToCurrencyXMLObject(file);
         return getListOfCurrencyFromCurrencyObject(currencyFromXML);
     }
@@ -40,22 +44,23 @@ public class CurrencyMapper {
      * Exact implementation of parsing XML to list of currencies
      * Get XML file and parse it according to CurrencyXML through XStream API.
      * Need to make correct object to parse
+     *
      * @param file which we want to parse
      * @return prepared object for further parse
      */
-    private CurrencyFromXML parseFileToCurrencyXMLObject(@NonNull File file){
+    private CurrencyFromXML parseFileToCurrencyXMLObject(@NonNull File file) {
         //парсим XML файл в CurrencyXML объект
         CurrencyFromXML currencyFromXml = null;
-        try (FileReader fileReader = new FileReader(file)){
+        try (FileReader fileReader = new FileReader(file)) {
             //создаем XStream
-                XStream xstream = new XStream();
+            XStream xstream = new XStream();
             // разрешаем всем классам из CurrencyXML читать XStream
-                xstream.addPermission(AnyTypePermission.ANY);
+            xstream.addPermission(AnyTypePermission.ANY);
             // передаем главный класс
-                xstream.processAnnotations(CurrencyFromXML.class);
-                currencyFromXml = (CurrencyFromXML) xstream.fromXML(fileReader);
+            xstream.processAnnotations(CurrencyFromXML.class);
+            currencyFromXml = (CurrencyFromXML) xstream.fromXML(fileReader);
 
-            if(currencyFromXml == null) throw new FileNotFoundException("No XML file, please check URL");
+            if (currencyFromXml == null) throw new FileNotFoundException("No XML file, please check URL");
         } catch (FileNotFoundException e) {
             log.warn("need to check XML URL or XML schema");
             e.printStackTrace();
@@ -68,10 +73,11 @@ public class CurrencyMapper {
 
     /**
      * Get list of Currency from prepared Object which we parse from XML file
+     *
      * @param currencyFromXML prepared object for parse
      * @return complete list of Currencies
      */
-    private List<Currency> getListOfCurrencyFromCurrencyObject(@NonNull CurrencyFromXML currencyFromXML){
+    private List<Currency> getListOfCurrencyFromCurrencyObject(@NonNull CurrencyFromXML currencyFromXML) {
         //получаем список валюты из объекта, в который мы парсили XML
         List<Currency> resultList = new ArrayList<>();
         //возвращаем Мапу состояющую из имени валюты и ставки
@@ -86,21 +92,23 @@ public class CurrencyMapper {
 
     /**
      * Transform list of curriencies to DTO list
+     *
      * @param currencies list which you want to transform
      * @return list of DTOs
      */
-    public List<CurrencyDto> getListOfCurrencyDto(List<Currency> currencies){
+    public List<CurrencyDto> getListOfCurrencyDto(List<Currency> currencies) {
         return currencies.stream().map(this::getCurrencyDtoInstance).distinct().collect(Collectors.toList());
 
     }
 
     /**
      * Method to map currency -> CurrencyDto
+     *
      * @param currency to map
      * @return Currency DTO result
      */
 
-    public CurrencyDto getCurrencyDtoInstance(Currency currency){
+    public CurrencyDto getCurrencyDtoInstance(Currency currency) {
         //юзаем stringbuilder для производительности
         StringBuilder sb = new StringBuilder();
         sb.append(currency.getName());
@@ -112,12 +120,13 @@ public class CurrencyMapper {
 
     /**
      * Method to map incoming request to Currency DTO
-     * @param startDate from request
-     * @param endDate from request
+     *
+     * @param startDate    from request
+     * @param endDate      from request
      * @param currencyName from request
      * @return DTO to further transfer
      */
-    public CurrencyDto getCurrencyDtoInstance(String startDate, String endDate, String currencyName){
+    public CurrencyDto getCurrencyDtoInstance(String startDate, String endDate, String currencyName) {
         return new CurrencyDto(startDate, endDate, currencyName);
 
     }

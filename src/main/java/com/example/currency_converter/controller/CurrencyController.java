@@ -4,7 +4,7 @@ package com.example.currency_converter.controller;
 import com.example.currency_converter.dto.CurrencyDto;
 import com.example.currency_converter.service.CurrencyService;
 import com.example.currency_converter.util.CurrencyMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,15 +17,14 @@ import java.util.List;
  * Controller return list of currency with required parameters
  */
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/currency")
 public class CurrencyController {
 
-    @Autowired
-    private CurrencyService currencyService;
+    private final CurrencyService currencyService;
 
-    @Autowired
-    private CurrencyMapper currencyMapper;
+    private final CurrencyMapper currencyMapper;
 
     /**
      * Method return list of currency with required parameters.

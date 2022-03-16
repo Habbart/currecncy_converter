@@ -1,0 +1,17 @@
+spring:
+  liquibase:
+    change-log: liquibase/changelog.xml
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres?allowPublicKeyRetrieval=true&useSSL=false&amp&serverTimezone=UTC
+    username: postgres
+    password: superuser
+    hikari:
+      schema: currency_converter
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+
+url: https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml
+
+#logging.level.root: debug

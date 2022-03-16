@@ -2,7 +2,7 @@ package com.example.currency_converter.service;
 
 
 import com.example.currency_converter.CurrencyConverterApplication;
-import com.example.currency_converter.currencyDAO.CurrencyDAO;
+import com.example.currency_converter.currency_dao.CurrencyDAO;
 import com.example.currency_converter.dto.CurrencyDto;
 import com.example.currency_converter.entity.Currency;
 import com.example.currency_converter.exception_handler.IncorrectDate;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CurrencyConverterApplication.class)
-@TestPropertySource(locations = "classpath:application.properties")
+@TestPropertySource(locations = "classpath:application.yml")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CurrencyServiceTest {
 
@@ -48,25 +48,26 @@ class CurrencyServiceTest {
     @BeforeEach
     void configureCurrencyDAO() {
 
-        Currency rub = new Currency(LocalDate.of(2000, 3, 28), "RUB", 150.00);
-        Currency usd = new Currency(LocalDate.of(2000, 3, 28), "USD", 1.15);
-        Currency jpy = new Currency(LocalDate.of(2000, 3, 28), "JPY", 200.00);
-        Currency usd1 = new Currency(LocalDate.of(2000, 3, 29), "USD", 1.16);
-        Currency jpy1 = new Currency(LocalDate.of(2000, 3, 29), "JPY", 210.00);
-        Currency rub1 = new Currency(LocalDate.of(2000, 3, 29), "RUB", 160.00);
+        Currency rub = new Currency(1, LocalDate.of(2000, 3, 28), "RUB", 150.00);
+        Currency usd = new Currency(2, LocalDate.of(2000, 3, 28), "USD", 1.15);
+        Currency jpy = new Currency(3, LocalDate.of(2000, 3, 28), "JPY", 200.00);
+        Currency usd1 = new Currency(4, LocalDate.of(2000, 3, 29), "USD", 1.16);
+        Currency jpy1 = new Currency(5, LocalDate.of(2000, 3, 29), "JPY", 210.00);
+        Currency rub1 = new Currency(6, LocalDate.of(2000, 3, 29), "RUB", 160.00);
 
         listFromDao.addAll(List.of(rub, usd, jpy, usd1, jpy1, rub1));
-        //сохраняем весь список, чтобы обновить кэш-лист в Сервисе
+        //сохраняем весь список, чтобы обновить кэш-лист в Сервисе для последующей валидации
         currencyService.saveListOfCurrencies(listFromDao);
 
         //настройка мока ДАО
         when(currencyDAO.getAllByDateAfterAndDateBefore(startDate, endDate)).thenReturn(listFromDao);
         when(currencyDAO.getAllByDateAfterAndDateBefore(endDate, startDate)).thenReturn(listFromDao);
         when(currencyDAO.getAllByDateAfterAndDateBefore(startDate, startDate)).thenReturn(Collections.emptyList());
-        when(currencyDAO.findDistinctFirstByDateBefore(endDate)).thenReturn(listFromDao.get(4));
+        when(currencyDAO.findFirstByDateBefore(endDate)).thenReturn(listFromDao.get(4));
         when(currencyDAO.findAllByName("USD")).thenReturn(List.of(usd, usd1));
-        when(currencyDAO.findDistinctFirstByDateBefore(endDate)).thenReturn(rub1);
-        when(currencyDAO.findDistinctFirstByDateBefore(startDate)).thenReturn(new Currency(LocalDate.of(2000, 3, 29), "RUB", 160.00));
+        when(currencyDAO.findFirstByDateBefore(endDate)).thenReturn(rub1);
+        when(currencyDAO.findFirstByDateBefore(endDate)).thenReturn(rub1);
+        when(currencyDAO.findFirstByDateBefore(startDate)).thenReturn(new Currency(LocalDate.of(2000, 3, 29), "RUB", 160.00));
 
 
     }
@@ -84,7 +85,7 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void getCurrency_givenCorrectDatesAndUSD() {
+    void getCurrencyGivenCorrectDatesAndUSD() {
         CurrencyDto currencyDto = new CurrencyDto(startDate.toString(), endDate.toString(), "USD");
 
         List<CurrencyDto> currencyDtoList = currencyService.getCurrency(currencyDto);
@@ -95,7 +96,7 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void getCurrency_givenWrongFormatOfDate_expectException() {
+    void getCurrencyGivenWrongFormatOfDate_expectException() {
         CurrencyDto currencyDto = new CurrencyDto("aaaa", "bbbb", "USD");
         String message = "Incorrect date format";
 
@@ -109,7 +110,7 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void getCurrency_givenDatesWhereNoCurrency_shouldThrowExceptionWithDate() {
+    void getCurrencyGivenDatesWhereNoCurrencyShouldThrowExceptionWithDate() {
         CurrencyDto currencyDto = new CurrencyDto(startDate.toString(), startDate.toString(), "USD");
         String message = "Last date of available currency: 2000-03-29";
 
@@ -123,7 +124,7 @@ class CurrencyServiceTest {
     }
 
     @Test
-    void getCurrency_givenNoCurrency_ShouldReturnListOfCurrencies() {
+    void getCurrencyGivenNoCurrency_ShouldReturnListOfCurrencies() {
         CurrencyDto currencyDto = new CurrencyDto(startDate.toString(), endDate.toString(), null);
         int expectedSize = 6;
 
@@ -138,7 +139,7 @@ class CurrencyServiceTest {
 
 
     @Test
-    void getCurrency_givenStartDateMixedUpWithEndDate_ShouldReturnUSD() {
+    void getCurrencyGivenStartDateMixedUpWithEndDate_ShouldReturnUSD() {
         CurrencyDto currencyDto = new CurrencyDto(endDate.toString(), startDate.toString(), "USD");
 
 
