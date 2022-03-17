@@ -1,38 +1,16 @@
-package com.example.currency_converter.util;
+package com.example.currency_converter.service.currency_sub_service;
 
 import com.example.currency_converter.dto.CurrencyDto;
-import com.example.currency_converter.exception_handler.IncorrectDate;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 /**
- * Class to help work with currency DTO
+ * Service to check start date and end date in Currency DTO and return them
  */
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DtoParamsHelper {
-
-    /**
-     * Check if String has correct date format to be parse in the future.
-     * May return null if it presents, so require null check.
-     *
-     * @param args Dates in String format to check
-     */
-    public static void checkDateFormat(String... args) {
-        if (args == null) return;
-        try {
-            for (String s : args) {
-                if (s == null) {
-                    continue;
-                }
-                LocalDate.parse(s);
-            }
-        } catch (Exception e) {
-            throw new IncorrectDate("Incorrect date format, date should be in format: yyyy-mm-dd");
-        }
-    }
+@Component
+public class DtoDateValidator {
 
 
     /**
@@ -45,7 +23,7 @@ public class DtoParamsHelper {
      * @param currencyDto Dto which you receive from Controller
      * @return arrays from two dates - start date and end date
      */
-    public static LocalDate[] getStartAndEndDatesFromDto(CurrencyDto currencyDto) {
+    public LocalDate[] getStartAndEndDatesFromDto(CurrencyDto currencyDto) {
         String startDate = currencyDto.getStartDate();
         String endDate = currencyDto.getEndDate();
 

@@ -6,7 +6,6 @@ import com.example.currency_converter.currency_dao.CurrencyDAO;
 import com.example.currency_converter.dto.CurrencyDto;
 import com.example.currency_converter.entity.Currency;
 import com.example.currency_converter.exception_handler.IncorrectDate;
-import com.example.currency_converter.util.TextFileDownloader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,9 +35,6 @@ class CurrencyServiceTest {
     private CurrencyService currencyService;
 
     @MockBean
-    private TextFileDownloader textFileDownloader;
-
-    @MockBean
     private CurrencyDAO currencyDAO;
 
     private final LocalDate startDate = LocalDate.of(2000, 3, 1);
@@ -63,26 +59,15 @@ class CurrencyServiceTest {
         when(currencyDAO.getAllByDateAfterAndDateBefore(startDate, endDate)).thenReturn(listFromDao);
         when(currencyDAO.getAllByDateAfterAndDateBefore(endDate, startDate)).thenReturn(listFromDao);
         when(currencyDAO.getAllByDateAfterAndDateBefore(startDate, startDate)).thenReturn(Collections.emptyList());
-        when(currencyDAO.findFirstByDateBefore(endDate)).thenReturn(listFromDao.get(4));
+        when(currencyDAO.findFirstByDateLessThan(endDate)).thenReturn(listFromDao.get(4));
         when(currencyDAO.findAllByName("USD")).thenReturn(List.of(usd, usd1));
-        when(currencyDAO.findFirstByDateBefore(endDate)).thenReturn(rub1);
-        when(currencyDAO.findFirstByDateBefore(endDate)).thenReturn(rub1);
-        when(currencyDAO.findFirstByDateBefore(startDate)).thenReturn(new Currency(LocalDate.of(2000, 3, 29), "RUB", 160.00));
+        when(currencyDAO.findFirstByDateLessThan(endDate)).thenReturn(rub1);
+        when(currencyDAO.findFirstByDateLessThan(endDate)).thenReturn(rub1);
+        when(currencyDAO.findFirstByDateLessThan(startDate)).thenReturn(new Currency(LocalDate.of(2000, 3, 29), "RUB", 160.00));
 
 
     }
 
-    @Test
-    void saveCurrencyListFromBank() {
-
-        assertThrows(NullPointerException.class, () -> {
-            currencyService.saveCurrencyListFromBank();
-        });
-
-
-        Mockito.verify(textFileDownloader, Mockito.times(1)).getFile();
-
-    }
 
     @Test
     void getCurrencyGivenCorrectDatesAndUSD() {

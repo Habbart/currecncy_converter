@@ -20,7 +20,7 @@ public class Currency {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name = "DATE")
+    @Column(name = "date_of_currency")
     private LocalDate date;
 
     @Column(name = "name")

@@ -3,10 +3,9 @@ package com.example.currency_converter.controller;
 
 import com.example.currency_converter.dto.CurrencyDto;
 import com.example.currency_converter.service.CurrencyService;
-import com.example.currency_converter.util.CurrencyMapper;
+import com.example.currency_converter.service.currency_sub_service.CurrencyToDtoMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,12 +18,10 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/currency")
 public class CurrencyController {
 
     private final CurrencyService currencyService;
-
-    private final CurrencyMapper currencyMapper;
+    private final CurrencyToDtoMapper currencyMapper;
 
     /**
      * Method return list of currency with required parameters.
@@ -36,7 +33,7 @@ public class CurrencyController {
      * @return list of currency for range of dates or exact currency
      */
 
-    @GetMapping("")
+    @GetMapping("/currency")
     public List<CurrencyDto> getCurrency(@RequestParam(value = "start_date", required = false) String startDate,
                                          @RequestParam(value = "end_date", required = false) String endDate,
                                          @RequestParam(value = "currency", required = false) String currency) {

@@ -1,8 +1,8 @@
 package com.example.currency_converter.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,13 +13,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 
-@Component
+/**
+ * Download file to txt from given url
+ */
+
 @Slf4j
-public class TextFileDownloader {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TextFileDownloaderUtil {
 
-
-    @Value("${url}")
-    private String url;
 
     /**
      * Download file from URL in param to TXT file - DownloadedFile_1.txt.
@@ -28,12 +29,12 @@ public class TextFileDownloader {
      * @return file which was downloaded
      */
 
-    public File getFile() {
+    public static File getFile(String url) {
         File file = new File("DownloadedFile_1.txt");
         URL website = null;
         log.debug("this file was downloaded by " + Thread.currentThread().getName());
         try {
-            website = new URL(this.url);
+            website = new URL(url);
             log.debug("url: " + website);
         } catch (MalformedURLException e) {
             e.printStackTrace();

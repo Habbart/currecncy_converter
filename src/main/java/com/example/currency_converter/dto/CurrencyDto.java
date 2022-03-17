@@ -11,12 +11,9 @@ import lombok.Data;
 @Data
 public class CurrencyDto {
 
-
-    private String startDate;
-
-    private String endDate;
-
-    private String currency;
+    private final String startDate;
+    private final String endDate;
+    private final String currency;
 
 
 }

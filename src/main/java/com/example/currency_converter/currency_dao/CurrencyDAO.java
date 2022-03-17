@@ -12,11 +12,15 @@ import java.util.List;
 @Repository
 public interface CurrencyDAO extends JpaRepository<Currency, Long> {
 
+
     @Query("select c from Currency c where c.date >= ?1 and c.date <= ?2")
     List<Currency> getAllByDateAfterAndDateBefore(LocalDate startDate, LocalDate beforeDate);
 
-    @Query("select c from Currency c where c.name = ?1 group by current_date")
     List<Currency> findAllByName(String name);
 
-    Currency findFirstByDateBefore(LocalDate localDate);
+    @Query("select max(c) from Currency c where c.date <= ?1")
+    Currency findFirstByDateLessThan(LocalDate localDate);
+
+
+
 }

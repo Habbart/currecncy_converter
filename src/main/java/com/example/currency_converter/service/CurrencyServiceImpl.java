@@ -6,11 +6,14 @@ import com.example.currency_converter.dto.CurrencyDto;
 import com.example.currency_converter.entity.Currency;
 import com.example.currency_converter.exception_handler.IllegalCurrency;
 import com.example.currency_converter.exception_handler.IncorrectDate;
-import com.example.currency_converter.util.CurrencyMapper;
-import com.example.currency_converter.util.DtoParamsHelper;
-import com.example.currency_converter.util.TextFileDownloader;
-import lombok.AllArgsConstructor;
+import com.example.currency_converter.service.currency_sub_service.CurrencyToDtoMapper;
+import com.example.currency_converter.service.currency_sub_service.DtoDateValidator;
+import com.example.currency_converter.service.currency_sub_service.FileToCurrencyMapper;
+import com.example.currency_converter.util.DateFormatCheckUtil;
+import com.example.currency_converter.util.TextFileDownloaderUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -20,22 +23,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+
+@RequiredArgsConstructor
 @Slf4j
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
     //todo собрать проект на gradle
-    private final TextFileDownloader textFileDownloader;
     private final CurrencyDAO currencyDAO;
-    private final CurrencyMapper currencyMapper;
+    private final FileToCurrencyMapper fileToCurrencyMapper;
+    private final CurrencyToDtoMapper currencyToDtoMapper;
+    private final DtoDateValidator dtoParamsValidator;
     /**
      * This set provide check of available currencies.
      * Each time when currency will be added - it will be added also in this cash.
      * HashSet guarantee no duplicates so cash shouldn't be so big.
      */
-    private HashSet<String> currencyCashSet;
+    private final HashSet<String> currencyCashSet;
 
+    @Value("${url}")
+    private String url;
 
     @Override
     public void saveCurrencyListFromBank() {
@@ -55,9 +62,9 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     private List<Currency> getListOfCurrency() {
 
-        File file = textFileDownloader.getFile();
+        File file = TextFileDownloaderUtil.getFile(url);
 
-        List<Currency> listOfCurrencyFromFile = currencyMapper.getListOfCurrencyFromFile(file);
+        List<Currency> listOfCurrencyFromFile = fileToCurrencyMapper.getListOfCurrencyFromFile(file);
 
         updateCashOfCurrenciesNames(listOfCurrencyFromFile);
 
@@ -80,8 +87,8 @@ public class CurrencyServiceImpl implements CurrencyService {
     public List<CurrencyDto> getCurrency(CurrencyDto currencyDto) {
 
         log.debug("проверяем параметры DTO на валидность");
-        DtoParamsHelper.checkDateFormat(currencyDto.getStartDate(), currencyDto.getEndDate());
-        LocalDate[] dates = DtoParamsHelper.getStartAndEndDatesFromDto(currencyDto);
+        DateFormatCheckUtil.checkDateFormat(currencyDto.getStartDate(), currencyDto.getEndDate());
+        LocalDate[] dates = dtoParamsValidator.getStartAndEndDatesFromDto(currencyDto);
         String currencyName = checkCurrencyAvailability(currencyDto.getCurrency(), currencyCashSet);
 
         //вытаскиываем переменные для удобства
@@ -96,20 +103,22 @@ public class CurrencyServiceImpl implements CurrencyService {
 
         //если за выбранные даты не найдено ни одной валюты, то кидаем исключение с ближайшей доступной датой для потворного запроса
         if (listOfAllCurrencies.isEmpty()) {
-            LocalDate availableDate = currencyDAO.findFirstByDateBefore(endDate).getDate();
-            throw new IncorrectDate(String.format("Currency %S for this date unavailable. Last date of available currency: %s", currencyDto.getCurrency(), availableDate));
+            log.debug("лист валют пуст");
+            Currency dateOfAvailableCurrency = currencyDAO.findFirstByDateLessThan(endDate);
+            String date = dateOfAvailableCurrency == null ? "unavailable" : dateOfAvailableCurrency.getDate().toString();
+            throw new IncorrectDate(String.format("Currency %S for this date unavailable. Last date of available currency: %s", currencyName, date));
         }
 
         //если валюта не выбрана, то возвращаем лист всех валют за выбранные даты, иначе ищет валюту и возвращает лист из одной позиции
         if (currencyName.isEmpty()) {
             log.debug("валюта не выбрана");
-            return currencyMapper.getListOfCurrencyDto(listOfAllCurrencies);
+            return currencyToDtoMapper.getListOfCurrencyDto(listOfAllCurrencies);
         } else {
             log.debug("выбрана");
             log.debug(currencyName);
             //фильтруем лист, где совпадает валюта с переданной и возвращаем
             List<Currency> collect = listOfAllCurrencies.stream().filter(c -> c.getName().equals(currencyName)).collect(Collectors.toList());
-            return currencyMapper.getListOfCurrencyDto(collect);
+            return currencyToDtoMapper.getListOfCurrencyDto(collect);
         }
 
     }

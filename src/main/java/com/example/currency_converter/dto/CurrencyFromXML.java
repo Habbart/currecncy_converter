@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Class only to perform data transfer from exactly XML format to Currency for further transfer
  */
 @XStreamAlias("gesmes:Envelope")
-public class CurrencyFromXML {
+public final class CurrencyFromXML {
 
 
     @XStreamAlias("gesmes:subject")

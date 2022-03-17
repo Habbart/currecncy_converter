@@ -28,4 +28,11 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="change name of date column" author="denisyan">
+        <renameColumn
+                tableName="currencies"
+                oldColumnName="date"
+                newColumnName="date_of_currency"/>
+
+    </changeSet>
 </databaseChangeLog>
