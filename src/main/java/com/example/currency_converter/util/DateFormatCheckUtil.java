@@ -22,15 +22,15 @@ public class DateFormatCheckUtil {
      */
     public static void checkDateFormat(String... args) {
         if (args == null) return;
+        String s = null;
         try {
-            for (String s : args) {
-                if (s == null) {
-                    continue;
-                }
+            for (int i = 0; i < args.length; i++) {
+                s = args[i];
+                if(s == null) continue;
                 LocalDate.parse(s);
             }
         } catch (Exception e) {
-            throw new IncorrectDate("Incorrect date format, date should be in format: yyyy-mm-dd");
+            throw new IncorrectDate(String.format("Incorrect date format in this date - %s, date should be in format: yyyy-mm-dd", s));
         }
     }
 }
