@@ -117,7 +117,7 @@ class CurrencyControllerIntegrationTest {
 
     @Test
     void getCurrencyGetUSDCurrencyForRangeOfDatesThenStatus200() throws Exception {
-        //todo 2.иногда фейлится
+
         ResultActions resultActions = mockMvc.perform(get("/currency?start_date=2000-03-27&end_date=2000-03-30&currency=usd")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

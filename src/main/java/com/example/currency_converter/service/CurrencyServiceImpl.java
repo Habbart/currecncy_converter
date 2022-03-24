@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
-    //todo 1. собрать проект на gradle
+
     private final CurrencyDAO currencyDAO;
     private final FileToCurrencyMapper fileToCurrencyMapper;
     private final CurrencyToDtoMapper currencyToDtoMapper;
