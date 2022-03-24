@@ -9,13 +9,12 @@ import com.example.currency_converter.exception_handler.IncorrectDate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
+
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,7 +24,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = CurrencyConverterApplication.class)
 @TestPropertySource(locations = "classpath:application.yml")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

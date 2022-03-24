@@ -1,5 +1,6 @@
 package com.example.currency_converter.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -7,6 +8,7 @@ import java.io.File;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 class TextFileDownloaderUtilTest {
 
 
